@@ -7,8 +7,11 @@ import { CognitoJwtVerifier } from 'aws-jwt-verify';
  */
 export interface AuthorizerContext {
   principalId: string;
+  userId: string;
   role: string;
+  campusId: string;
   campus: string;
+  departmentId: string;
   department: string;
   facultyId: string;
   [key: string]: string | number | boolean | null | undefined;
@@ -103,13 +106,52 @@ export const handler = async (event: APIGatewayRequestAuthorizerEvent): Promise<
     const department = (claims['custom:department'] as string) || 'UNKNOWN';
     const facultyId = (claims['custom:facultyId'] as string) || claims['sub'] || 'UNKNOWN';
 
+    // Map Campus claim to ID and Name
+    let campusId = 'BENGALURU';
+    let campusName = 'Bengaluru Campus';
+    const normCampus = String(campus).trim().toUpperCase();
+    if (normCampus === 'BENGALURU' || normCampus.includes('BENGALURU')) {
+      campusId = 'BENGALURU';
+      campusName = 'Bengaluru Campus';
+    } else if (normCampus === 'VIZAG' || normCampus.includes('VIZAG')) {
+      campusId = 'VIZAG';
+      campusName = 'Vizag Campus';
+    } else if (normCampus === 'HYDERABAD' || normCampus.includes('HYDERABAD')) {
+      campusId = 'HYDERABAD';
+      campusName = 'Hyderabad Campus';
+    } else {
+      campusId = normCampus || 'BENGALURU';
+      campusName = String(campus).trim() || 'Bengaluru Campus';
+    }
+
+    // Map Department claim to ID and Name
+    let departmentId = 'CSE';
+    let departmentName = 'Computer Science';
+    const normDept = String(department).trim().toUpperCase();
+    if (normDept === 'CSE' || normDept.includes('COMPUTER SCIENCE')) {
+      departmentId = 'CSE';
+      departmentName = 'Computer Science';
+    } else if (normDept === 'ECE' || normDept.includes('ELECTRONICS')) {
+      departmentId = 'ECE';
+      departmentName = 'Electronics & Communication';
+    } else if (normDept === 'ME' || normDept.includes('MECHANICAL')) {
+      departmentId = 'ME';
+      departmentName = 'Mechanical Engineering';
+    } else {
+      departmentId = normDept || 'CSE';
+      departmentName = String(department).trim() || 'Computer Science';
+    }
+
     // 5. Build AuthorizerContext
     // Note: All values MUST be strings, numbers, or booleans to satisfy API Gateway limits
     const authorizerContext: AuthorizerContext = {
-      principalId: facultyId,
+      principalId: String(facultyId),
+      userId: String(facultyId),
       role: String(role),
-      campus: String(campus),
-      department: String(department),
+      campusId: campusId,
+      campus: campusName,
+      departmentId: departmentId,
+      department: departmentName,
       facultyId: String(facultyId),
     };
 

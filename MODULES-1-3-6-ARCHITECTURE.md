@@ -93,16 +93,22 @@ The claims are extracted and injected into the API Gateway event.
 ```json
 {
   "principalId": "<facultyId>",
+  "userId": "<facultyId>",
   "role": "<custom:role>",
+  "campusId": "<campusId>",
   "campus": "<custom:campus>",
+  "departmentId": "<departmentId>",
   "department": "<custom:department>",
   "facultyId": "<custom:facultyId>"
 }
 ```
 
 Because API Gateway requires a **FLAT** structure for context variables, downstream Lambdas access these variables via:
+* `event.requestContext.authorizer.userId`
 * `event.requestContext.authorizer.role`
+* `event.requestContext.authorizer.campusId`
 * `event.requestContext.authorizer.campus`
+* `event.requestContext.authorizer.departmentId`
 * `event.requestContext.authorizer.department`
 * `event.requestContext.authorizer.facultyId`
 
@@ -276,10 +282,10 @@ graph LR
 
 The core infrastructure modules achieve extensive testing coverage using AWS CDK assertions.
 
-* **Test Suites Passing**: 5 / 5
-* **Unit Tests Passing**: 93 / 93
+* **Test Suites Passing**: 6 / 6
+* **Unit Tests Passing**: 99 / 99
 * **Code Coverage**: ~85.7% overall lines (Auth and Storage logic 100% covered).
-* **Synthesis Validation**: `npx cdk synth Prajna-Dev-Foundation Prajna-Dev-Auth Prajna-Dev-Storage` passes cleanly.
+* **Synthesis Validation**: `npx cdk synth` passes cleanly for all stacks (`Prajna-Dev-Foundation`, `Prajna-Dev-Auth`, `Prajna-Dev-Storage`).
 * **Deployment Validation**: Deployed parameter outputs verified dynamically against active AWS Account.
 
 ---

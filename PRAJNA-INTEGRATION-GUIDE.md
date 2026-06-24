@@ -484,14 +484,17 @@ After successful JWT verification, the authorizer injects a **FLAT** context obj
 ```json
 {
   "principalId": "faculty-uuid-or-sub",
+  "userId": "faculty-uuid-or-sub",
   "role": "FACULTY",
-  "campus": "Main Campus",
+  "campusId": "BENGALURU",
+  "campus": "Bengaluru Campus",
+  "departmentId": "CSE",
   "department": "Computer Science",
   "facultyId": "faculty-uuid-or-sub"
 }
 ```
 
-> **Source:** `src/auth/authorizer/index.ts`, lines 108–114
+> **Source:** `src/auth/authorizer/index.ts`
 
 ### Accessing Claims in Your Backend Lambda
 
@@ -499,8 +502,11 @@ In any Lambda behind the authorized API Gateway, access the claims via:
 
 ```typescript
 export const handler = async (event: APIGatewayProxyEvent) => {
+  const userId     = event.requestContext.authorizer?.userId;
   const role       = event.requestContext.authorizer?.role;
+  const campusId   = event.requestContext.authorizer?.campusId;
   const campus     = event.requestContext.authorizer?.campus;
+  const departmentId = event.requestContext.authorizer?.departmentId;
   const department = event.requestContext.authorizer?.department;
   const facultyId  = event.requestContext.authorizer?.facultyId;
   
@@ -509,8 +515,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     return { statusCode: 403, body: 'Forbidden' };
   }
   
-  // Use facultyId for data scoping:
-  const records = await getRecordsByFaculty(facultyId);
+  // Use facultyId / userId for data scoping:
+  const records = await getRecordsByFaculty(facultyId || userId);
   // ...
 };
 ```
