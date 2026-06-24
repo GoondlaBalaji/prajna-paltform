@@ -112,6 +112,10 @@ Because API Gateway requires a **FLAT** structure for context variables, downstr
 * `event.requestContext.authorizer.department`
 * `event.requestContext.authorizer.facultyId`
 
+**Data Normalization & Resolution**:
+* **Role Tie-Breaker**: If a user belongs to multiple Cognito groups, their `role` context variable is resolved using a strict ranking system (`ADMIN(4) > PVC/PROVC/IQAC(3) > DIRECTOR(2) > HOD(1) > FACULTY(0)`).
+* **Campus & Department Normalization**: The authorizer normalizes raw strings (e.g., "CSE" or "Computer Science") into standard `id` and `name` pairs (`campusId`/`campus` and `departmentId`/`department`).
+
 ### Published SSM Parameters
 * `/prajna/dev/auth/user-pool-id`
 * `/prajna/dev/auth/user-pool-arn`
@@ -166,7 +170,7 @@ To ensure objects remain deeply private, downloads utilize **Pre-signed GET URLs
 
 ## 5. Cross-Module Integration Guide
 
-Modules should strictly avoid hardcoding ARNs or Bucket Names. Use CDK `StringParameter` imports to resolve dependencies at synthesis time.
+Modules should strictly avoid hardcoding ARNs or Bucket Names. Use CDK `StringParameter` imports to resolve dependencies at synthesis time. All canonical SSM paths are defined in the Foundation layer (`lib/foundation/constants/ssm-parameters.ts`), which acts as the cross-team integration registry (e.g., `SsmPaths.Auth.*`, `SsmPaths.Storage.*`, `SsmPaths.Approval.*`).
 
 ### TypeScript Examples (CDK Integration)
 
@@ -283,7 +287,7 @@ graph LR
 The core infrastructure modules achieve extensive testing coverage using AWS CDK assertions.
 
 * **Test Suites Passing**: 6 / 6
-* **Unit Tests Passing**: 99 / 99
+* **Unit Tests Passing**: 100 / 100
 * **Code Coverage**: ~85.7% overall lines (Auth and Storage logic 100% covered).
 * **Synthesis Validation**: `npx cdk synth` passes cleanly for all stacks (`Prajna-Dev-Foundation`, `Prajna-Dev-Auth`, `Prajna-Dev-Storage`).
 * **Deployment Validation**: Deployed parameter outputs verified dynamically against active AWS Account.
