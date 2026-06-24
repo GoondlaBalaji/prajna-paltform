@@ -101,10 +101,43 @@ export const handler = async (event: APIGatewayRequestAuthorizerEvent): Promise<
 
     // 4. Read claims (cast to any to access Cognito custom attributes)
     const claims = payload as any;
-    const role = (claims['custom:role'] as string) || 'UNKNOWN';
+    const customRole = (claims['custom:role'] as string) || 'UNKNOWN';
     const campus = (claims['custom:campus'] as string) || 'UNKNOWN';
     const department = (claims['custom:department'] as string) || 'UNKNOWN';
     const facultyId = (claims['custom:facultyId'] as string) || claims['sub'] || 'UNKNOWN';
+
+    // Resolve Role via tie-breaker ranking of cognito:groups, falling back to custom:role
+    const groups = claims['cognito:groups'] as string[] | undefined;
+    const roleRanking: Record<string, number> = {
+      ADMIN: 4,
+      PVC: 3,
+      PROVC: 3,
+      IQAC: 3,
+      DIRECTOR: 2,
+      HOD: 1,
+      FACULTY: 0,
+    };
+
+    let resolvedRole = customRole;
+    if (Array.isArray(groups) && groups.length > 0) {
+      let highestRank = -1;
+      let highestRole = resolvedRole;
+      
+      for (const group of groups) {
+        const normGroup = group.trim().toUpperCase();
+        const rank = roleRanking[normGroup] !== undefined ? roleRanking[normGroup] : -1;
+        if (rank > highestRank) {
+          highestRank = rank;
+          highestRole = normGroup;
+        }
+      }
+      
+      // Only override if we found a valid group role
+      if (highestRank >= 0) {
+        resolvedRole = highestRole;
+      }
+    }
+    const role = resolvedRole;
 
     // Map Campus claim to ID and Name
     let campusId = 'BENGALURU';

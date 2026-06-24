@@ -235,6 +235,8 @@ export interface CognitoConfig {
  * new FoundationStack(app, 'FoundationStack', { config });
  * ```
  */
+export type EnvironmentConfig = PrajnaEnvironmentConfig;
+
 export interface PrajnaEnvironmentConfig {
   /** The deployment stage. */
   readonly stage: Stage;

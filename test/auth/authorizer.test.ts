@@ -115,6 +115,24 @@ describe('Cognito Lambda Authorizer', () => {
     expect(context.department).toBe('Mechanical Engineering');
   });
 
+  test('resolves role using cognito:groups tie-breaker when multiple groups exist', async () => {
+    mockVerify.mockResolvedValue({
+      'custom:role': 'FACULTY',
+      'cognito:groups': ['FACULTY', 'HOD', 'DIRECTOR', 'UNKNOWN_GROUP'],
+      'custom:campus': 'BENGALURU',
+      'custom:department': 'CSE',
+      'custom:facultyId': 'faculty-123',
+      sub: 'sub-123',
+    });
+
+    const event = createEvent('Bearer token123');
+    const result = await handler(event);
+
+    const context = result.context!;
+    // DIRECTOR (rank 2) is highest among ['FACULTY' (0), 'HOD' (1), 'DIRECTOR' (2)]
+    expect(context.role).toBe('DIRECTOR');
+  });
+
   test('throws error if verifier fails', async () => {
     mockVerify.mockRejectedValue(new Error('Invalid token'));
 

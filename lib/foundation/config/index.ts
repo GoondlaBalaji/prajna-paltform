@@ -30,6 +30,7 @@ export {
   MonitoringConfig,
   CognitoConfig,
   PrajnaEnvironmentConfig,
+  EnvironmentConfig,
 } from './environment';
 
 // ── Concrete Configuration Re-exports ──────────────────────────────────────

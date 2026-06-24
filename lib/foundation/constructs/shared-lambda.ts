@@ -77,7 +77,7 @@ export interface SharedLambdaProps {
    *
    * For inline code, use {@link code} instead.
    */
-  readonly entry: string;
+  readonly entry?: string;
 
   /**
    * The name of the exported handler function.
@@ -295,13 +295,13 @@ export class SharedLambda extends Construct {
       : lambda.Tracing.DISABLED;
 
     // ── Resolve Code Asset ───────────────────────────────────────────────
-    const code = props.code ?? lambda.Code.fromAsset(
+    const code = props.code ?? (props.entry ? lambda.Code.fromAsset(
       path.dirname(props.entry),
-    );
+    ) : (() => { throw new Error('[PRAJNA] SharedLambda requires either "entry" or "code".'); })());
 
     const handler = props.code
       ? (props.handler ?? 'index.handler')
-      : `${path.basename(props.entry, path.extname(props.entry))}.${props.handler ?? 'handler'}`;
+      : (props.entry ? `${path.basename(props.entry, path.extname(props.entry))}.${props.handler ?? 'handler'}` : 'index.handler');
 
     // ── Lambda Function Creation ─────────────────────────────────────────
     this.function = new lambda.Function(this, 'Function', {
