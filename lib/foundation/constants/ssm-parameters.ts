@@ -229,6 +229,49 @@ export class NotificationParameters {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Approval Parameters (Module 13)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * SSM parameter paths published by the Approval Workflow module.
+ *
+ * Consumed by business modules that need to create approval requests,
+ * check approval status, or integrate with the workflow engine.
+ *
+ * Published by Module 13 (Approval) — consumed cross-team by Modules
+ * 9 (Research), 10 (Achievements), 11 (FDP), 14 (Score), and others.
+ */
+export class ApprovalParameters {
+
+  private constructor() {}
+
+  /** The approvals DynamoDB table name. */
+  static tableName(stage: Stage): string {
+    return ResourceNames.ssmParameter(stage, ModuleIdentifier.APPROVAL, 'approvals-table-name');
+  }
+
+  /** The approvals DynamoDB table ARN. */
+  static tableArn(stage: Stage): string {
+    return ResourceNames.ssmParameter(stage, ModuleIdentifier.APPROVAL, 'approvals-table-arn');
+  }
+
+  /** The approval workflow Step Functions state machine ARN. */
+  static workflowStateMachineArn(stage: Stage): string {
+    return ResourceNames.ssmParameter(stage, ModuleIdentifier.APPROVAL, 'workflow-state-machine-arn');
+  }
+
+  /** The create-request Lambda function ARN. */
+  static createRequestFunctionArn(stage: Stage): string {
+    return ResourceNames.ssmParameter(stage, ModuleIdentifier.APPROVAL, 'create-request-function-arn');
+  }
+
+  /** The get-status Lambda function ARN. */
+  static getStatusFunctionArn(stage: Stage): string {
+    return ResourceNames.ssmParameter(stage, ModuleIdentifier.APPROVAL, 'get-status-function-arn');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Aggregated Export
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -262,4 +305,5 @@ export const SsmPaths = {
   Database: DatabaseParameters,
   Storage: StorageParameters,
   Notification: NotificationParameters,
+  Approval: ApprovalParameters,
 } as const;
