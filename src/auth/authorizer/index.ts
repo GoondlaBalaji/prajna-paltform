@@ -1,0 +1,133 @@
+import { APIGatewayRequestAuthorizerEvent, APIGatewayAuthorizerResult, APIGatewayAuthorizerWithContextResult } from 'aws-lambda';
+import { CognitoJwtVerifier } from 'aws-jwt-verify';
+
+/**
+ * Standard Context interface expected by all PRAJNA Backend Modules.
+ * API Gateway strictly requires all context values to be strings, numbers, or booleans.
+ */
+export interface AuthorizerContext {
+  principalId: string;
+  role: string;
+  campus: string;
+  department: string;
+  facultyId: string;
+  [key: string]: string | number | boolean | null | undefined;
+}
+
+const USER_POOL_ID = process.env.USER_POOL_ID;
+const USER_POOL_CLIENT_ID = process.env.USER_POOL_CLIENT_ID;
+
+if (!USER_POOL_ID || !USER_POOL_CLIENT_ID) {
+  throw new Error('Missing required environment variables for JWT verification');
+}
+
+/**
+ * The CognitoJwtVerifier instance is created outside the handler function.
+ * This is crucial for performance: it caches the User Pool JWKS (JSON Web Key Set)
+ * in memory. On subsequent Lambda invocations (warm starts), it validates the 
+ * signature instantly without making external HTTP requests. It automatically 
+ * handles key rotation in the background if the JWKS changes.
+ */
+const jwtVerifier = CognitoJwtVerifier.create({
+  userPoolId: USER_POOL_ID,
+  tokenUse: 'id', // Explicitly validate that this is an ID token
+  clientId: USER_POOL_CLIENT_ID, // Validate the 'aud' claim
+});
+
+/**
+ * Helper function to generate an IAM policy for API Gateway.
+ */
+function generatePolicy(
+  principalId: string,
+  effect: 'Allow' | 'Deny',
+  resource: string,
+  context: AuthorizerContext
+): APIGatewayAuthorizerResult {
+  
+  const authResponse: APIGatewayAuthorizerWithContextResult<AuthorizerContext> = {
+    principalId,
+    policyDocument: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'execute-api:Invoke',
+          Effect: effect,
+          Resource: resource,
+        },
+      ],
+    },
+    context,
+  };
+
+  return authResponse;
+}
+
+/**
+ * Lambda Authorizer Handler for PRAJNA API Gateway.
+ */
+export const handler = async (event: APIGatewayRequestAuthorizerEvent): Promise<APIGatewayAuthorizerResult> => {
+  try {
+    console.log('Authorizer invoked for method:', event.methodArn);
+
+    // 1. Read Authorization header
+    // API Gateway headers might be lowercased depending on the client/proxy
+    const authHeader = event.headers?.Authorization || event.headers?.authorization;
+
+    if (!authHeader) {
+      console.error('Missing Authorization header');
+      throw new Error('Unauthorized'); // 401
+    }
+
+    // 2. Extract Bearer token
+    if (!authHeader.startsWith('Bearer ')) {
+      console.error('Invalid Authorization header format');
+      throw new Error('Unauthorized'); // 401
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    // 3. Verify JWT payload using Cognito JWKS
+    // This validates signature, expiration, issuer, and token_use securely.
+    let payload;
+    try {
+      payload = await jwtVerifier.verify(token);
+    } catch (err) {
+      console.error('Token verification failed:', err);
+      throw new Error('Unauthorized'); // 401
+    }
+
+    // 4. Read claims (cast to any to access Cognito custom attributes)
+    const claims = payload as any;
+    const role = (claims['custom:role'] as string) || 'UNKNOWN';
+    const campus = (claims['custom:campus'] as string) || 'UNKNOWN';
+    const department = (claims['custom:department'] as string) || 'UNKNOWN';
+    const facultyId = (claims['custom:facultyId'] as string) || claims['sub'] || 'UNKNOWN';
+
+    // 5. Build AuthorizerContext
+    // Note: All values MUST be strings, numbers, or booleans to satisfy API Gateway limits
+    const authorizerContext: AuthorizerContext = {
+      principalId: facultyId,
+      role: String(role),
+      campus: String(campus),
+      department: String(department),
+      facultyId: String(facultyId),
+    };
+
+    // 6 & 7. Return IAM Allow Policy with injected context
+    // We allow access to the requested methodArn if the token is successfully parsed.
+    console.log(`Successfully authorized user: ${facultyId} (${role})`);
+    
+    return generatePolicy(facultyId, 'Allow', event.methodArn, authorizerContext);
+
+  } catch (error) {
+    // If we throw exactly "Unauthorized", API Gateway returns a 401.
+    // Otherwise, returning a Deny policy returns a 403.
+    // For unparseable tokens or missing headers, 401 is appropriate.
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      throw error;
+    }
+    
+    console.error('Unexpected error in authorizer', error);
+    throw new Error('Unauthorized');
+  }
+};
