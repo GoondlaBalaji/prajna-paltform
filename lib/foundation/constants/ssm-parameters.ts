@@ -89,9 +89,14 @@ export class AuthParameters {
     return ResourceNames.ssmParameter(stage, ModuleIdentifier.AUTH, 'user-pool-domain');
   }
 
-  /** The Lambda Authorizer function ARN. */
+  /**
+   * The Lambda Authorizer function ARN.
+   *
+   * @note Path corrected 2026-06-27 — deployed infra (lib/auth/authorizer.ts:80)
+   * uses identifier `authorizer-lambda-arn`, not `authorizer-function-arn`.
+   */
   static authorizerFunctionArn(stage: Stage): string {
-    return ResourceNames.ssmParameter(stage, ModuleIdentifier.AUTH, 'authorizer-function-arn');
+    return ResourceNames.ssmParameter(stage, ModuleIdentifier.AUTH, 'authorizer-lambda-arn');
   }
 
   /** The Cognito Identity Pool ID (if applicable). */
@@ -178,24 +183,44 @@ export class StorageParameters {
 
   private constructor() {}
 
-  /** The document storage S3 bucket name. */
+  /**
+   * The document storage S3 bucket name.
+   *
+   * @note Path corrected 2026-06-27 — deployed infra (lib/storage/outputs.ts:65)
+   * uses identifier `documents-bucket-name` (plural), not `document-bucket-name`.
+   */
   static documentBucketName(stage: Stage): string {
-    return ResourceNames.ssmParameter(stage, ModuleIdentifier.STORAGE, 'document-bucket-name');
+    return ResourceNames.ssmParameter(stage, ModuleIdentifier.STORAGE, 'documents-bucket-name');
   }
 
-  /** The document storage S3 bucket ARN. */
+  /**
+   * The document storage S3 bucket ARN.
+   *
+   * @note Path corrected 2026-06-27 — deployed infra (lib/storage/outputs.ts:73)
+   * uses identifier `documents-bucket-arn` (plural), not `document-bucket-arn`.
+   */
   static documentBucketArn(stage: Stage): string {
-    return ResourceNames.ssmParameter(stage, ModuleIdentifier.STORAGE, 'document-bucket-arn');
+    return ResourceNames.ssmParameter(stage, ModuleIdentifier.STORAGE, 'documents-bucket-arn');
   }
 
-  /** The upload pre-signed URL generator Lambda function ARN. */
+  /**
+   * The upload pre-signed URL generator Lambda function ARN.
+   *
+   * @note Path corrected 2026-06-29 — deployed infra (lib/storage/api.ts:114)
+   * uses identifier `upload-lambda-arn`, not `upload-function-arn`.
+   */
   static uploadFunctionArn(stage: Stage): string {
-    return ResourceNames.ssmParameter(stage, ModuleIdentifier.STORAGE, 'upload-function-arn');
+    return ResourceNames.ssmParameter(stage, ModuleIdentifier.STORAGE, 'upload-lambda-arn');
   }
 
-  /** The download pre-signed URL generator Lambda function ARN. */
+  /**
+   * The download pre-signed URL generator Lambda function ARN.
+   *
+   * @note Path corrected 2026-06-29 — deployed infra (lib/storage/api.ts:122)
+   * uses identifier `download-lambda-arn`, not `download-function-arn`.
+   */
   static downloadFunctionArn(stage: Stage): string {
-    return ResourceNames.ssmParameter(stage, ModuleIdentifier.STORAGE, 'download-function-arn');
+    return ResourceNames.ssmParameter(stage, ModuleIdentifier.STORAGE, 'download-lambda-arn');
   }
 }
 
