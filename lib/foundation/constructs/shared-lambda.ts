@@ -4,7 +4,7 @@
  * This is the most widely used construct in the platform. It wraps
  * `aws_lambda.Function` with every platform standard pre-applied:
  *
- * - Node.js 22 runtime (ARM64 Graviton2)
+ * - Node.js 20 runtime (ARM64 Graviton2)
  * - AWS X-Ray active tracing
  * - Structured logging via Powertools environment variables
  * - Dedicated CloudWatch Log Group with environment-appropriate retention
@@ -221,7 +221,7 @@ export class SharedLambda extends Construct {
 
     // Guard against TypeScript source files passed as entry points.
     // SharedLambda uses lambda.Code.fromAsset() which uploads the directory
-    // as-is — the nodejs22.x runtime cannot execute TypeScript directly.
+    // as-is — the nodejs20.x runtime cannot execute TypeScript directly.
     // Use a pre-compiled JS directory via the "code" prop instead:
     //   code: lambda.Code.fromAsset('dist/auth/authorizer')
     // Or use the NodejsFunction construct if you need CDK-managed bundling.
@@ -229,7 +229,7 @@ export class SharedLambda extends Construct {
       throw new Error(
         `[PRAJNA] SharedLambda "${props.identifier}": The "entry" prop points to ` +
         `a TypeScript file ("${props.entry}"). SharedLambda uses Code.fromAsset() ` +
-        'which cannot execute TypeScript with the nodejs22.x runtime. ' +
+        'which cannot execute TypeScript with the nodejs20.x runtime. ' +
         'Provide a pre-compiled JavaScript directory via the "code" prop ' +
         '(e.g., lambda.Code.fromAsset("dist/auth/authorizer")), or use the ' +
         'NodejsFunction construct for CDK-managed TypeScript bundling.',

@@ -513,12 +513,12 @@ The wrapper constructs inherit platform defaults, execute validation patterns, a
 #### SharedLambda
 * **Purpose**: Deploys Node.js Lambda functions.
 * **Features**:
-  * Sets the runtime to Node.js 22 and architectures to ARM64 (Graviton2).
+  * Sets the runtime to Node.js 20 and architectures to ARM64 (Graviton2).
   * Integrates with X-Ray active tracing.
   * Merges Powertools service names and logging environments.
   * Auto-provisions a `SharedLogGroup` and `SharedRole` execution configuration.
 * **TypeScript Entry Limitation**:
-  `SharedLambda` uses CDK `Code.fromAsset()` which packages the source directory directly. Because Node.js 22 cannot run TypeScript natively, the function `entry` path **cannot** point directly to a `.ts` file unless you pass a pre-compiled JS directory path via the `code` prop.
+  `SharedLambda` uses CDK `Code.fromAsset()` which packages the source directory directly. Because Node.js 20 cannot run TypeScript natively, the function `entry` path **cannot** point directly to a `.ts` file unless you pass a pre-compiled JS directory path via the `code` prop.
 * **Usage**:
   ```typescript
   import { SharedLambda } from '@foundation/constructs';

@@ -58,7 +58,7 @@ import { SharedParameter } from '../foundation/constructs/shared-parameter';
 | **Source** | `lib/foundation/constructs/shared-lambda.ts` |
 
 **What it enforces automatically:**
-- Node.js 22 runtime (ARM64 Graviton2)
+- Node.js 20 runtime (ARM64 Graviton2)
 - AWS X-Ray active tracing
 - Structured logging via Powertools environment variables
 - Dedicated CloudWatch Log Group with environment-appropriate retention

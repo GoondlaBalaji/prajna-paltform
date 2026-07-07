@@ -40,7 +40,7 @@ export const DEFAULT_REGION = 'ap-south-1' as const;
  * requires a different language (e.g., Python for ML inference).
  * To upgrade the platform runtime, change this single constant.
  */
-export const DEFAULT_LAMBDA_RUNTIME = Runtime.NODEJS_22_X;
+export const DEFAULT_LAMBDA_RUNTIME = Runtime.NODEJS_20_X;
 
 /**
  * Platform-standard Lambda architecture.

@@ -54,7 +54,7 @@
 
 | Default | Value | Source |
 |:---|:---|:---|
-| Runtime | `nodejs22.x` | [defaults.ts:43](file:///c:/Users/balaj/Pictures/prajna-paltform/lib/foundation/constants/defaults.ts#L43) |
+| Runtime | `nodejs20.x` | [defaults.ts:43](file:///c:/Users/balaj/Pictures/prajna-paltform/lib/foundation/constants/defaults.ts#L43) |
 | Architecture | `ARM_64` (Graviton2) | [defaults.ts:52](file:///c:/Users/balaj/Pictures/prajna-paltform/lib/foundation/constants/defaults.ts#L52) |
 | Tracing | `ACTIVE` (X-Ray) | [defaults.ts:81](file:///c:/Users/balaj/Pictures/prajna-paltform/lib/foundation/constants/defaults.ts#L81) |
 | `NODE_OPTIONS` | `--enable-source-maps` | [defaults.ts:90](file:///c:/Users/balaj/Pictures/prajna-paltform/lib/foundation/constants/defaults.ts#L90) |

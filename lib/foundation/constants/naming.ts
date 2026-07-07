@@ -199,6 +199,12 @@ export enum ModuleIdentifier {
   /** Scoring and evaluation. */
   SCORE = 'score',
 
+  /** Module 15: Leaderboard and rankings. */
+  LEADERBOARD = 'leaderboard',
+
+  /** Module 18: Annual Performance Appraisal Report. */
+  APAR = 'apar',
+
   /** AI Career Coach. */
   CAREER_COACH = 'career-coach',
 
