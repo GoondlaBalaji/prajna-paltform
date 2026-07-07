@@ -62,6 +62,25 @@ export class PrajnaCognito extends Construct {
     
     const clientName = ResourceNames.cognitoClient(stage, module, 'web');
 
+    const clientReadAttributes = new cognito.ClientAttributes()
+      .withStandardAttributes({
+        email: true,
+        emailVerified: true,
+        givenName: true,
+        familyName: true,
+        phoneNumber: true,
+      })
+      .withCustomAttributes('role', 'campus', 'department', 'facultyId');
+
+    const clientWriteAttributes = new cognito.ClientAttributes()
+      .withStandardAttributes({
+        email: true,
+        givenName: true,
+        familyName: true,
+        phoneNumber: true,
+      })
+      .withCustomAttributes('role', 'campus', 'department', 'facultyId');
+
     this.webClient = new cognito.UserPoolClient(this, 'WebClient', {
       userPool: this.userPool,
       userPoolClientName: clientName,
@@ -72,6 +91,8 @@ export class PrajnaCognito extends Construct {
         },
         scopes: [cognito.OAuthScope.EMAIL, cognito.OAuthScope.OPENID, cognito.OAuthScope.PROFILE],
       },
+      readAttributes: clientReadAttributes,
+      writeAttributes: clientWriteAttributes,
       accessTokenValidity: Duration.hours(config.cognito.accessTokenValidityHours),
       idTokenValidity: Duration.hours(config.cognito.accessTokenValidityHours),
       refreshTokenValidity: Duration.days(config.cognito.refreshTokenValidityDays),
