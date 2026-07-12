@@ -21,7 +21,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./cdk.out",
+    "outDir": "dist",
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {

@@ -1,8 +1,13 @@
 {
-  "name": "prajna-platform",
+  "name": "prajna-platform-foundation",
   "version": "1.0.0",
-  "private": true,
+  "main": "dist/lib/foundation/index.js",
+  "types": "dist/lib/foundation/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "prepare": "npm run build",
     "build": "tsc",
     "watch": "tsc -w",
     "cdk": "cdk",
