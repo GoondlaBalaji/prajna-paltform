@@ -1,4 +1,4 @@
-# @prajna/platform-foundation
+# @prajna-platform/platform-foundation
 
 The official shared infrastructure library for the PRAJNA — AI Powered Faculty Companion Platform. This package provides the complete set of reusable AWS CDK constructs, environment configuration, naming conventions, IAM policy helpers, monitoring utilities, and platform constants that every PRAJNA module builds on. All platform teams are required to consume this package rather than creating platform primitives independently, ensuring naming consistency, tagging compliance, and infrastructure standards across all 30+ deployed modules.
 
@@ -38,15 +38,15 @@ The official shared infrastructure library for the PRAJNA — AI Powered Faculty
 
 ## Architecture
 
-`@prajna/platform-foundation` is the base layer of the PRAJNA platform dependency graph. Every module in the platform — from the Auth layer (M3) and API Gateway (M4) to the Approval Engine (M13), Notification Service (M16), and APAR module (M18) — imports from this package to remain compliant with platform standards.
+`@prajna-platform/platform-foundation` is the base layer of the PRAJNA platform dependency graph. Every module in the platform — from the Auth layer (M3) and API Gateway (M4) to the Approval Engine (M13), Notification Service (M16), and APAR module (M18) — imports from this package to remain compliant with platform standards.
 
 ```
-                        ┌─────────────────────────────────┐
-                        │   @prajna/platform-foundation   │
-                        │                                 │
-                        │  Constructs · Config · Names    │
-                        │  Tags · Utils · IAM · Monitor   │
-                        └───────────────┬─────────────────┘
+                        ┌──────────────────────────────────────────┐
+                        │   @prajna-platform/platform-foundation   │
+                        │                                          │
+                        │  Constructs · Config · Names             │
+                        │  Tags · Utils · IAM · Monitor            │
+                        └───────────────┬──────────────────────────┘
                                         │ peerDep
           ┌─────────────────────────────┼────────────────────────┐
           │                             │                        │
@@ -68,20 +68,20 @@ All modules rely on a single, versioned copy of this library. When a platform st
 
 ## Installation
 
-This package is published to the PRAJNA organization's internal package registry. Ensure you have authenticated to the registry before installing.
+This package is published to the `@prajna-platform` organization on the npm registry. Ensure you are logged in before installing.
 
 ```bash
-# Authenticate to the organization registry (contact your team lead for credentials)
-npm login --registry https://<your-org-registry-url>
+# Authenticate to npm
+npm login
 
 # Install the package
-npm install @prajna/platform-foundation
+npm install @prajna-platform/platform-foundation
 ```
 
-Add the registry scope to your project's `.npmrc`:
+Add the registry scope to your project's `.npmrc` if using a private or proxied registry:
 
 ```
-@prajna:registry=https://<your-org-registry-url>
+@prajna-platform:registry=https://registry.npmjs.org/
 ```
 
 This package requires the following peer dependencies:
@@ -96,14 +96,14 @@ npm install aws-cdk-lib@^2.175.0 constructs@^10.4.2
 
 ## Basic Usage
 
-All public APIs are exported from the package root. Do **not** import from internal paths such as `@prajna/platform-foundation/dist/lib/foundation/constructs/shared-lambda`.
+All public APIs are exported from the package root. Do **not** import from internal paths such as `@prajna-platform/platform-foundation/dist/lib/foundation/constructs/shared-lambda`.
 
 ### Shared Lambda Construct
 
 The most widely used construct in the platform. Wraps `aws_lambda.Function` with Node.js 20 (ARM64 Graviton2), AWS X-Ray tracing, structured logging, and platform-compliant IAM role pre-applied.
 
 ```typescript
-import { SharedLambda, ModuleIdentifier, getEnvironmentConfig, Stage } from '@prajna/platform-foundation';
+import { SharedLambda, ModuleIdentifier, getEnvironmentConfig, Stage } from '@prajna-platform/platform-foundation';
 import * as path from 'path';
 
 const config = getEnvironmentConfig(Stage.DEVELOPMENT);
@@ -129,7 +129,7 @@ handler.function.addPermission('ApiGatewayInvoke', { ... });
 Enforces platform IAM standards — consistent naming, automatic tagging, and managed policy attachment.
 
 ```typescript
-import { SharedRole, ModuleIdentifier, getEnvironmentConfig, Stage } from '@prajna/platform-foundation';
+import { SharedRole, ModuleIdentifier, getEnvironmentConfig, Stage } from '@prajna-platform/platform-foundation';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
 const config = getEnvironmentConfig(Stage.DEVELOPMENT);
@@ -151,7 +151,7 @@ const executionRole = new SharedRole(this, 'LambdaExecRole', {
 Creates S3 buckets with platform-compliant naming, versioning, lifecycle policies, and encryption pre-configured.
 
 ```typescript
-import { SharedBucket, ModuleIdentifier, getEnvironmentConfig, Stage } from '@prajna/platform-foundation';
+import { SharedBucket, ModuleIdentifier, getEnvironmentConfig, Stage } from '@prajna-platform/platform-foundation';
 
 const config = getEnvironmentConfig(Stage.DEVELOPMENT);
 
@@ -171,7 +171,7 @@ const documentsBucket = new SharedBucket(this, 'DocumentsBucket', {
 Generates deterministic, platform-standard AWS resource names and SSM parameter paths.
 
 ```typescript
-import { ResourceNames, ModuleIdentifier, Stage } from '@prajna/platform-foundation';
+import { ResourceNames, ModuleIdentifier, Stage } from '@prajna-platform/platform-foundation';
 
 // → "prajna-dev-auth-fn-authorizer"
 const lambdaName = ResourceNames.lambdaFunction(Stage.DEVELOPMENT, ModuleIdentifier.AUTH, 'authorizer');
@@ -188,7 +188,7 @@ const ssmPath = ResourceNames.ssmParameter(Stage.DEVELOPMENT, ModuleIdentifier.A
 Resolves the complete, typed configuration for a deployment stage. The exhaustive switch-statement in `getEnvironmentConfig` guarantees compile-time safety — adding a new stage without a config file is a TypeScript error.
 
 ```typescript
-import { getEnvironmentConfig, Stage, PrajnaEnvironmentConfig } from '@prajna/platform-foundation';
+import { getEnvironmentConfig, Stage, PrajnaEnvironmentConfig } from '@prajna-platform/platform-foundation';
 
 const config: PrajnaEnvironmentConfig = getEnvironmentConfig(Stage.PRODUCTION);
 
@@ -202,7 +202,7 @@ console.log(config.lambda.memorySize);        // 256
 Applies the mandatory PRAJNA tagging taxonomy to any CDK construct tree.
 
 ```typescript
-import { PrajnaTags, ModuleIdentifier, Stage } from '@prajna/platform-foundation';
+import { PrajnaTags, ModuleIdentifier, Stage } from '@prajna-platform/platform-foundation';
 import { App } from 'aws-cdk-lib';
 
 const app = new App();
@@ -221,7 +221,7 @@ PrajnaTags.apply(app, {
 The published package exposes the following module tree, all accessible via the package root import:
 
 ```
-@prajna/platform-foundation
+@prajna-platform/platform-foundation
 └── dist/lib/foundation/
     ├── index.js / index.d.ts          ← Root barrel (start here)
     │
@@ -321,10 +321,10 @@ The publishing workflow is:
 2. Bump the version in `package.json` following the SemVer rules above.
 3. Run `npm run build` to compile a clean build.
 4. Run `npm pack --dry-run` to verify the tarball contents.
-5. Run `npm publish --access restricted` targeting the organization's internal package registry.
+5. Run `npm publish --access public` targeting the `@prajna-platform` organization on npm.
 6. Notify all dependent module teams of the new version via the team communication channel.
 
-> Packages are published to the PRAJNA organization's internal registry, **not** to the public npmjs.com registry.
+> Packages are published under the `@prajna-platform` npm organization scope.
 
 ---
 

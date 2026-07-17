@@ -1,10 +1,17 @@
 {
-  "name": "prajna-platform-foundation",
+  "name": "@prajna-platform/platform-foundation",
   "version": "1.0.0",
+  "description": "PRAJNA platform shared foundation library containing constructs, config, constants, and utilities.",
   "main": "dist/lib/foundation/index.js",
   "types": "dist/lib/foundation/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lib/foundation/index.d.ts",
+      "default": "./dist/lib/foundation/index.js"
+    }
+  },
   "files": [
-    "dist"
+    "dist/lib/foundation"
   ],
   "scripts": {
     "prepare": "npm run build",
@@ -16,20 +23,22 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint . --ext .ts"
   },
-  "dependencies": {
-    "@aws-sdk/client-s3": "^3.1075.0",
-    "@aws-sdk/s3-request-presigner": "^3.1075.0",
+  "peerDependencies": {
     "aws-cdk-lib": "^2.175.0",
-    "aws-jwt-verify": "^5.2.1",
-    "constructs": "^10.4.2",
-    "source-map-support": "^0.5.21"
+    "constructs": "^10.4.2"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1075.0",
+    "@aws-sdk/s3-request-presigner": "^3.1075.0",
     "@types/aws-lambda": "^8.10.162",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
     "aws-cdk": "^2.175.0",
+    "aws-cdk-lib": "^2.175.0",
+    "aws-jwt-verify": "^5.2.1",
+    "constructs": "^10.4.2",
     "jest": "^30.4.2",
+    "source-map-support": "^0.5.21",
     "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "typescript": "~5.7.0"
