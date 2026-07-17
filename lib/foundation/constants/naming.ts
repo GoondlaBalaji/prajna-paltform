@@ -187,16 +187,16 @@ export enum ModuleIdentifier {
   /** Administrative tasks. */
   ADMINISTRATION = 'admin',
 
-  /** Approval engine and workflows. */
+  /** Module 13: Approval engine and workflows. */
   APPROVAL = 'approval',
 
-  /** Reports and analytics. */
+  /** Module 17: Reports and analytics. */
   REPORTS = 'reports',
 
-  /** Notifications and alerts. */
+  /** Module 16: Notifications and alerts. */
   NOTIFICATION = 'notification',
 
-  /** Scoring and evaluation. */
+  /** Module 14: Scoring and evaluation. */
   SCORE = 'score',
 
   /** Module 15: Leaderboard and rankings. */
