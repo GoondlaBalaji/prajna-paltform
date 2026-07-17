@@ -34,3 +34,11 @@ build/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# npm pack tarballs
+*.tgz
+
+# Local install simulation directories
+sim_install/
+temp-test-install/
+test_pkg/
